@@ -36,18 +36,3 @@ You can browse and run the [notebooks](./notebooks). You will need to install th
 pip install -r requirements.txt
 ```
 
-## Streamlit App
-
-**Add explanations on how to use the app.**
-
-To run the app :
-
-```shell
-cd streamlit_app
-conda create --name my-awesome-streamlit python=3.9
-conda activate my-awesome-streamlit
-pip install -r requirements.txt
-streamlit run app.py
-```
-
-The app should then be available at [localhost:8501](http://localhost:8501).
