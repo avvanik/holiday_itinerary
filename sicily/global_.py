@@ -6,6 +6,8 @@ lat_max = 38.49400
 base_url = 'https://api.opentripmap.com/0.1/en/places/'
 api_key = '5ae2e3f221c38a28845f05b656934aef7d36d2c813d4ee1bc9d86b1d'
 
+kind = 'hostels'
+
 page_length = 250
 
 dict_detailed = {'xid': [],

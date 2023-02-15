@@ -1,6 +1,6 @@
 import requests
 import pandas as pd
-from global_ import api_key, base_url, lon_max, lon_min, lat_max, lat_min, page_length, dict_detailed
+from global_ import api_key, base_url, lon_max, lon_min, lat_max, lat_min, page_length, dict_detailed, kind
 from data import Prepare, get_schema
 
 
@@ -8,7 +8,7 @@ class Model:
 
     def __init__(self):
         self.url = f"{base_url}bbox?lon_min={lon_min}&lon_max={lon_max}&lat_min={lat_min}&lat_max={lat_max}&kinds" \
-                   f"=accomodations&format=json&"
+                   f"={kind}&format=json&"
         self.key = api_key
 
     def request_objects(self):
@@ -54,6 +54,3 @@ class Model:
         df = Prepare(df).clean().set_index(['xid'])
         df.to_csv('places_output.csv')
         print("csv saved")
-
-
-print(Model().request_dict_detailed())
