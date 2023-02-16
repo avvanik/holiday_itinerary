@@ -1,8 +1,9 @@
 import requests
 import pandas as pd
-from global_ import api_key, base_url, lon_max, lon_min, lat_max, lat_min, page_length, dict_detailed, kind
-from data import Prepare, get_schema
+from src.global_ import api_key, base_url, lon_max, lon_min, lat_max, lat_min, page_length, kind
+from src.data import Prepare
 import json as j
+
 
 class Model:
 
@@ -14,7 +15,7 @@ class Model:
     def request_objects(self):
         request = [requests.get(
             f"{self.url}&apikey={api_key}&limit={page_length}&offset={page_length * i}").json()
-                   for i in range(10)]
+                   for i in range(2)]  # 10
         return request
 
     def get_xid(self):
@@ -40,28 +41,27 @@ class Model:
             request = f"{base_url}xid/{xid}?apikey" \
                       f"={api_key}"
             json = requests.get(request).json()
-            #address = Prepare(pd.read_json(request)).address_to_list()
-            #del json['address']
-            #json['address'] = address
+            # address = Prepare(pd.read_json(request)).address_to_list()
+            # del json['address']
+            # json['address'] = address
 
-            #for dic_key in dict_detailed.keys():
-                #if dic_key not in json.keys():
-                    #json[dic_key] = 'null'
+            # for dic_key in dict_detailed.keys():
+            # if dic_key not in json.keys():
+            # json[dic_key] = 'null'
 
             collection.append(json)
 
-            with open('output.json', 'w') as f:
+            with open('output_test.json', 'w') as f:
                 j.dump(collection, f)
 
-            #get_schema(json)
+            # get_schema(json)
 
-        return collection     #dict_detailed
+        return collection  # dict_detailed
 
-    def create_csv(self):
-        df = pd.DataFrame.from_dict(self.request_dict_detailed())
-        df = Prepare(df).clean().set_index(['xid'])
-        df.to_csv('places_output.csv')
-        print("csv saved")
-
-
-print(Model().request_dict_detailed())
+    # def create_csv(self):
+    #     df = pd.DataFrame.from_dict(self.request_dict_detailed())
+    #     df = Prepare(df).clean().set_index(['xid'])
+    #     df.to_csv('places_output.csv')
+    #     print("csv saved")
+    #
+    #     return df
