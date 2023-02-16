@@ -15,7 +15,7 @@ class Model:
     def request_objects(self):
         request = [requests.get(
             f"{self.url}&apikey={api_key}&limit={page_length}&offset={page_length * i}").json()
-                   for i in range(2)]  # 10
+                   for i in range(10)]
         return request
 
     def get_xid(self):
