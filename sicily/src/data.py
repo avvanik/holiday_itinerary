@@ -10,6 +10,7 @@ def get_address(address_fields):
 
 
 def get_schema(json):
+
     for key in list(json):
         if key == 'xid':
             dict_detailed['xid'].append(json.get('xid'))
@@ -43,7 +44,8 @@ class Prepare:
         df['lat'] = df['lat'].str[8:]
         df['lat'] = df['lat'].str[:-1]
         df['kinds'] = df['kinds'].str.split(',')
-
+        df['kinds_amount'] = df['kinds'].apply(lambda x: len(x))
+        df = df.drop(['kinds'], axis=1)
         return df
 
     def address_to_list(self):
