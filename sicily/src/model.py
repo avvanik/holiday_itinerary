@@ -1,30 +1,43 @@
 import requests
 import pandas as pd
-from global_ import api_key, base_url, lon_max, lon_min, lat_max, lat_min, page_length, dict_detailed
+from global_ import api_key, base_url, lon_max, lon_min, lat_max, lat_min, page_length, dict_detailed, kinds
 from data import Prepare, get_schema
 
 
 class Model:
 
     def __init__(self):
-        self.url = f"{base_url}bbox?lon_min={lon_min}&lon_max={lon_max}&lat_min={lat_min}&lat_max={lat_max}&kinds" \
-                   f"=accomodations&format=json&"
+        #self.url = f"{base_url}bbox?lon_min={lon_min}&lon_max={lon_max}&lat_min={lat_min}&lat_max={lat_max}&kinds" \
+                   #f"=accomodations&format=json&"
+        self.url = f"{base_url}bbox?lon_min={lon_min}&lon_max={lon_max}&lat_min={lat_min}&lat_max={lat_max}&"
         self.key = api_key
 
     def request_objects(self):
-        request = [requests.get(
-            f"{self.url}&apikey={api_key}&limit={page_length}&offset={page_length * i}").json()
-                   for i in range(2)]
-        return request
+        #request = [requests.get(
+            #f"{self.url}&apikey={api_key}&limit={page_length}&offset={page_length * i}").json()
+                   #for i in range(2)]
+        #return request
+
+        objects = []
+
+        for kind in kinds:
+            request = [requests.get(
+                f"{self.url}kinds={kind}&format=json&apikey={api_key}&limit={page_length}&offset={page_length * i}").json()
+                       for i in range(2)]
+
+            objects.append(request)
+
+        return objects
 
     def get_xid(self):
 
         xid_dict = {'xid': []}
         xid_list = []
 
-        for request in self.request_objects():
-            for key in request:
-                xid_dict['xid'].append(key.get('xid'))
+        for json in self.request_objects():
+            for key in json:
+                for value in key:
+                    xid_dict['xid'].append(value.get('xid'))
 
         for value in xid_dict.values():
             for element in value:
@@ -53,4 +66,3 @@ class Model:
         df = pd.DataFrame.from_dict(self.request_dict_detailed())
         df = Prepare(df).clean().set_index(['xid'])
         df.to_csv('src/places_output.csv')
-
