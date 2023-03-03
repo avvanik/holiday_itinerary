@@ -1,0 +1,17 @@
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/DataScientest/JAN23_BDE_INT_Holiday_Itinerary/develop-anna/sicily/src/places_output.csv?token=GHSAT0AAAAAAB55ARCIJK7JZGPIZFHKINUMY77CWIQ' AS row
+CREATE (:POI {id: row.xid,
+                    name:row.name,
+                    url: row.url,
+                    stars: row.stars,
+                    wikipedia: row.wikipedia,
+                    image: row.image,
+                    address: row.address,
+                    kinds: row.kinds,
+		    location: point({latitude: toFloat(row.lat), longitude: toFloat(row.lon)})
+})
+
+MATCH (p1:POI)
+MATCH (p2:POI)
+WHERE NOT id(p1) = id(p2)
+WITH distance(p1.location, p2.location) as distance, p1, p2
+MERGE (p1)-[:DISTANCE { value: distance }]-(p2)

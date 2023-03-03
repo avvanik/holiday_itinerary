@@ -30,7 +30,7 @@ This project was developed by the following team :
 - John Doe ([GitHub](https://github.com/) / [LinkedIn](http://linkedin.com/))
 - Martin Dupont ([GitHub](https://github.com/) / [LinkedIn](http://linkedin.com/))
 
-You can browse and run the [notebooks](./notebooks). You will need to install the dependencies (in a dedicated environment) :
+You can browse and run the [notebooks](./output). You will need to install the dependencies (in a dedicated environment) :
 
 ```
 pip install -r requirements.txt
