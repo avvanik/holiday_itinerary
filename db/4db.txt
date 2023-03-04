@@ -1,4 +1,4 @@
-LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/DataScientest/JAN23_BDE_INT_Holiday_Itinerary/develop-anna/sicily/src/places_output.csv?token=GHSAT0AAAAAAB55ARCIJK7JZGPIZFHKINUMY77CWIQ' AS row
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/DataScientest/JAN23_BDE_INT_Holiday_Itinerary/main/data/places_output.csv?token=GHSAT0AAAAAAB55ARCIJXXQMHQZKC3RE354ZAC4TFQ' AS row
 CREATE (:POI {id: row.xid,
                     name:row.name,
                     url: row.url,
