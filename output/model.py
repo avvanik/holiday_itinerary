@@ -58,5 +58,5 @@ class Model:
 
     def create_csv(self):
         df = pd.DataFrame.from_dict(self.request_dict_detailed())
-        df = Prepare(df).clean().set_index(['xid'])
+        df = Prepare(df).clean()
         df.to_csv('/data/places_output.csv')
