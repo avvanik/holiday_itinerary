@@ -87,6 +87,14 @@ MATCH (p2:End)
 WITH point.distance(p1.location, p2.location) as distance, p1, p2
 MERGE (p1)-[:ROUTE { value: distance }]-(p2)
 
+-- FIND SHORTEST PATH
+MATCH
+  (s:Start),
+  (e:End),
+  p = shortestPath((s)-[*]-(e))
+WHERE length(p) > 1
+RETURN p
+
 
 
 
