@@ -36,14 +36,14 @@ def read_root():
     return {"DB": "NEO4J"}
 
 
-@api.get("/data")
+@api.get("/poi")
 def read_item():
     with obj.driver.session() as session:
         result = session.write_transaction(obj.return_data)
         return result
 
 
-@api.get("/{kind:str}")
+@api.get("/poi/{kind:str}")
 def read_item(kind):
 
     with obj.driver.session() as session:
