@@ -28,7 +28,7 @@ api = FastAPI(
     description="API returns specified POI in chosen area"
 )
 
-obj = Neo4jDB()
+db = Neo4jDB()
 
 
 @api.get("/")
@@ -38,22 +38,21 @@ def read_root():
 
 @api.get("/poi")
 def read_item():
-    with obj.driver.session() as session:
-        result = session.write_transaction(obj.return_data)
+    with db.driver.session() as session:
+        result = session.write_transaction(db.return_data)
         return result
 
 
 @api.get("/poi/{kind:str}")
 def read_item(kind):
-
-    with obj.driver.session() as session:
-        result = session.write_transaction(obj.return_data)
+    with db.driver.session() as session:
+        result = session.write_transaction(db.return_data)
 
         try:
-            poi_data = list(filter(lambda x: x.get('kind') == kind, result))
+            for d in result:
+                poi_data = list(filter(lambda x: x.get('kind') == kind, d))
 
-            return poi_data
+                return poi_data
 
         except IndexError:
             return print(f"no {kind} in this area")
-
