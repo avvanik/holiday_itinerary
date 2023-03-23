@@ -22,6 +22,18 @@ class Neo4jDB:
         result = tx.run("MATCH (p:POI) return p")
         return result.values()
 
+    @staticmethod
+    def return_kind(tx, kind):
+        result = tx.run("MATCH (p:POI {kind: $kind}) RETURN p", kind=kind)
+        return result.values
+
+    @staticmethod
+    def return_poi(tx, kind, lon, lat):
+        result = tx.run("MATCH (p:POI {kind: $kind, longitude: $lon, latitude: $lat}) "
+                        " SET location: point({latitude: toFloat(p.lat), longitude: toFloat(p.lon)}"
+                        "RETURN p", kind=kind, lon=lon, lat=lat)
+        return result
+
 
 api = FastAPI(
     title="POI in Palermo",
@@ -43,16 +55,10 @@ def read_item():
         return result
 
 
-@api.get("/poi/{kind:str}")
-def read_item(kind):
+@api.get("/poi/{kind:str}/{lon:float}/{lat:float}")
+def read_item(kind, lon, lat):
     with db.driver.session() as session:
-        result = session.write_transaction(db.return_data)
+        result = session.write_transaction(db.return_poi(kind, lon, lat))
+        return result
 
-        try:
-            for d in result:
-                poi_data = list(filter(lambda x: x.get('kind') == kind, d))
 
-                return poi_data
-
-        except IndexError:
-            return print(f"no {kind} in this area")

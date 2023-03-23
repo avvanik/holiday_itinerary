@@ -15,8 +15,8 @@ services:
   python-app:
     build:
       context: .
-      dockerfile: endpoint/Dockerfile
-    command: uvicorn endpoint.api:endpoint --host 0.0.0.0
+      dockerfile: Dockerfile
+    command: uvicorn app.api:app --reload --host 0.0.0.0
     ports:
       - 8000:8000
     environment:
