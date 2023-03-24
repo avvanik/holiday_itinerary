@@ -28,10 +28,17 @@ class Neo4jDB:
         return result.values
 
     @staticmethod
-    def return_poi(tx, kind, lon, lat):
+    def nearest_poi(tx, kind, lon, lat):
         result = tx.run("MATCH (p:POI {kind: $kind, longitude: $lon, latitude: $lat}) "
                         " SET location: point({latitude: toFloat(p.lat), longitude: toFloat(p.lon)}"
                         "RETURN p", kind=kind, lon=lon, lat=lat)
+        return result
+
+    @staticmethod
+    def itinerary_proposal(tx, lon, lat):
+
+        result = tx.run("MATCH (p:POI {longitude: $lon, latitude: $lat}), (e:End), p = shortestPath((s)-[*]-(e)) "
+                        "WHERE length(p) > 1 RETURN p", lon=lon, lat=lat)
         return result
 
 
@@ -56,9 +63,16 @@ def read_item():
 
 
 @api.get("/poi/{kind:str}/{lon:float}/{lat:float}")
-def read_item(kind, lon, lat):
+def return_nearest_poi(kind, lon, lat):
     with db.driver.session() as session:
-        result = session.write_transaction(db.return_poi, kind, lon, lat)
+        result = session.write_transaction(db.nearest_poi, kind, lon, lat)
+        return result
+
+
+@api.get("/poi/itinerary/{lon:float}/{lat:float}")
+def return_nearest_poi(lon, lat):
+    with db.driver.session() as session:
+        result = session.write_transaction(db.itinerary_proposal, lon, lat)
         return result
 
 
