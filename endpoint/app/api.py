@@ -58,7 +58,7 @@ def read_item():
 @api.get("/poi/{kind:str}/{lon:float}/{lat:float}")
 def read_item(kind, lon, lat):
     with db.driver.session() as session:
-        result = session.write_transaction(db.return_poi(kind, lon, lat))
+        result = session.write_transaction(db.return_poi, kind, lon, lat)
         return result
 
 
