@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from neo4j import GraphDatabase
+import folium
+from global_ import coordinates
 
 
 class Neo4jDB:
@@ -35,10 +37,24 @@ class Neo4jDB:
         return result
 
     @staticmethod
-    def itinerary_proposal(tx, lon, lat):
+    def create_map(poi):
+        itinerary_map = folium.Map(location=coordinates, zoom_start=13)
+        lat = poi.get('lat')
+        lon = poi.get('lon')
 
-        result = tx.run("MATCH (p:POI {longitude: $lon, latitude: $lat}), (e:End), p = shortestPath((s)-[*]-(e)) "
-                        "WHERE length(p) > 1 RETURN p", lon=lon, lat=lat)
+        for x, y in zip(lat, lon):
+            folium.Marker(([x, y])).add_to(itinerary_map)
+
+        return 'output.html'
+
+    @staticmethod
+    def itinerary_proposal(tx, lon, lat):
+        nearest_poi = tx.run("MATCH (p:POI {longitude: $lon, latitude: $lat}), (e:End), p = shortestPath((s)-[*]-(e)) "
+                             "WHERE length(p) = 1 RETURN p", lon=lon, lat=lat)
+
+        result = tx.run("MATCH($nearest_poi), (e:End), p = shortestPath((s)-[*]-(e)) "
+                        "WHERE length(p) > 1 RETURN p ", nearest_poi=nearest_poi)
+
         return result
 
 
@@ -58,21 +74,22 @@ def read_root():
 @api.get("/poi")
 def read_item():
     with db.driver.session() as session:
-        result = session.write_transaction(db.return_data)
-        return result
+        return session.write_transaction(db.return_data)
 
 
 @api.get("/poi/{kind:str}/{lon:float}/{lat:float}")
 def return_nearest_poi(kind, lon, lat):
     with db.driver.session() as session:
-        result = session.write_transaction(db.nearest_poi, kind, lon, lat)
-        return result
+        return session.write_transaction(db.nearest_poi, kind, lon, lat)
 
 
 @api.get("/poi/itinerary/{lon:float}/{lat:float}")
-def return_nearest_poi(lon, lat):
+def return_itinerary(lon, lat):
     with db.driver.session() as session:
-        result = session.write_transaction(db.itinerary_proposal, lon, lat)
-        return result
+        return session.write_transaction(db.itinerary_proposal, lon, lat)
 
 
+@api.get("/poi/itinerary/map/{lon:float}/{lat:float}")
+def return_itinerary_as_map(poi):
+    with db.driver.session() as session:
+        return session.write_transaction(db.create_map, poi)
