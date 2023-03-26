@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from neo4j import GraphDatabase
 import folium
-from global_ import coordinates
 
 
 class Neo4jDB:
@@ -38,7 +37,7 @@ class Neo4jDB:
 
     @staticmethod
     def create_map(poi):
-        itinerary_map = folium.Map(location=coordinates, zoom_start=13)
+        itinerary_map = folium.Map(location=[38.05968,  13.26699], zoom_start=13)
         lat = poi.get('lat')
         lon = poi.get('lon')
 
