@@ -49,8 +49,9 @@ class Neo4jDB:
 
     @staticmethod
     def itinerary_proposal(tx, lon, lat):
-        nearest_poi = tx.run("MATCH (p:POI {longitude: $lon, latitude: $lat}), (e:End), p = shortestPath((s)-[*]-(e)) "
-                             "WHERE length(p) = 1 RETURN p", lon=lon, lat=lat)
+
+        nearest_poi = tx.run("MATCH (p:POI) WITH p, point.distance(point({latitude: $lat, longitude: $lon, "
+                             "crs: 'wgs-84}) as distance ORDER BY distance ASC LIMIT 1", lon=lon, lat=lat)
 
         result = tx.run("MATCH($nearest_poi), (e:End), p = shortestPath((s)-[*]-(e)) "
                         "WHERE length(p) > 1 RETURN p ", nearest_poi=nearest_poi)
