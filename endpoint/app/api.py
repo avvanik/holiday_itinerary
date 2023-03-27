@@ -89,7 +89,7 @@ def return_itinerary(lon, lat):
         return session.write_transaction(db.itinerary_proposal, lon, lat)
 
 
-@api.get("/poi/itinerary/map/{lon:float}/{lat:float}")
+@api.get("/poi/itinerary/map/{poi:str}")
 def return_itinerary_as_map(poi):
     with db.driver.session() as session:
         return session.write_transaction(db.create_map, poi)

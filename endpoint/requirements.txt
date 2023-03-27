@@ -16,3 +16,4 @@ typing_extensions==4.3.0
 uvicorn==0.18.2
 uvloop==0.16.0
 watchfiles==0.16.1
+folium~=0.14.0
