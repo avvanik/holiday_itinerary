@@ -2,9 +2,6 @@ from fastapi import FastAPI
 from neo4j import GraphDatabase
 import folium
 
-url = "https://raw.githubusercontent.com/DataScientest/JAN23_BDE_INT_Holiday_Itinerary/main/data/places_output.csv" \
-      "?token=GHSAT0AAAAAAB55ARCIPXI334SUJP4GCPVWZBBHS4A"
-
 
 class Neo4jDB:
 
@@ -31,7 +28,7 @@ class Neo4jDB:
         return tx.run("MATCH (p:POI {kind: $kind}) "
                       "WITH p, p.location AS start_node, "
                       "point({latitude: $lat, longitude: $lon}) AS coordinates "
-                      "RETURN p, round(distance(start_node, coordinates)) AS distance "
+                      "RETURN p, round(point.distance(start_node, coordinates)) AS distance "
                       "ORDER BY distance "
                       "LIMIT 1", kind=kind, lat=lat, lon=lon)
 
