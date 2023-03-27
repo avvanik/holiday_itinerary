@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from neo4j import GraphDatabase
 import folium
 
+url = "https://raw.githubusercontent.com/DataScientest/JAN23_BDE_INT_Holiday_Itinerary/main/data/places_output.csv" \
+      "?token=GHSAT0AAAAAAB55ARCIPXI334SUJP4GCPVWZBBHS4A"
+
 
 class Neo4jDB:
 
@@ -10,7 +13,6 @@ class Neo4jDB:
         self.user = "neo4j"
         self.password = "Y$zulDtAvM3q"
         self.driver = GraphDatabase.driver(self.uri, auth=(self.user, self.password))
-        self.url = "https://raw.githubusercontent.com/DataScientest/JAN23_BDE_INT_Holiday_Itinerary/main/data/places_output.csv?token=GHSAT0AAAAAAB55ARCIPXI334SUJP4GCPVWZBBHS4A"
 
     def verify_connection(self):
         with self.driver as driver:
@@ -20,11 +22,11 @@ class Neo4jDB:
         self.driver.close()
 
     @staticmethod
-    def generate_data(tx, self):
+    def generate_data(tx):
         result = tx.run("LOAD CSV WITH HEADERS FROM $url AS row CREATE (:POI {id: row.xid, name:row.name, "
                         "url: row.url, stars: row.stars, wikipedia: row.wikipedia, image: row.image, "
                         "address: row.address, kind: row.kinds,  location: point({latitude: toFloat(row.lat), "
-                        "longitude: toFloat(row.lon)})}) RETURN p", url=self.url)
+                        "longitude: toFloat(row.lon)})}) RETURN p", url=url)
 
         return result
 
