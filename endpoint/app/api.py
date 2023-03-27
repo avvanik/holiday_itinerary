@@ -27,15 +27,23 @@ class Neo4jDB:
         return result.values()
 
     @staticmethod
-    def nearest_poi(tx, lon, lat):
-        return tx.run("MATCH (p:POI) WITH p, point.distance(point({latitude: $lat, longitude: $lon, "
-                      "crs: 'wgs-84}) as distance ORDER BY distance ASC LIMIT 1", lon=lon, lat=lat)
+    def nearest_poi(tx, kind, lon, lat):
+        return tx.run("MATCH (p:POI {kind: $kind}) "
+                      "WITH p, p.location AS start_node, "
+                      "point({latitude: $lat, longitude: $lon}) AS coordinates "
+                      "RETURN p, round(distance(start_node, coordinates)) AS distance "
+                      "ORDER BY distance "
+                      "LIMIT 1", kind=kind, lat=lat, lon=lon)
 
     @staticmethod
-    def itinerary_proposal(tx, lon, lat):
+    def itinerary_proposal(tx, kind, lon, lat):
         # get closest poi as start node
-        start_node = tx.run("MATCH (p:POI) WITH p, point.distance(point({latitude: $lat, longitude: $lon, "
-                            "crs: 'wgs-84}) as distance ORDER BY distance ASC LIMIT 1", lon=lon, lat=lat)
+        start_node = tx.run("MATCH (p:POI {kind: $kind}) "
+                            "WITH p, p.location AS start_node, "
+                            "point({latitude: $lat, longitude: $lon}) AS coordinates "
+                            "RETURN p, round(distance(start_node, coordinates)) AS distance "
+                            "ORDER BY distance "
+                            "LIMIT 1", kind=kind, lat=lat, lon=lon)
 
         # set the closest poi as start node and return itinerary (end node 2be defined)
         result = tx.run("MATCH($start), (e:End), p = shortestPath((s)-[*]-(e)) "
@@ -72,13 +80,13 @@ def read_item():
         return session.write_transaction(db.return_data)
 
 
-@api.get("/poi/nearest/{lon:float}/{lat:float}")
-def return_nearest_poi(lon, lat):
+@api.get("/poi/nearest/{kind:str}/{lon:float}/{lat:float}")
+def return_nearest_poi(kind, lon, lat):
     with db.driver.session() as session:
-        return session.write_transaction(db.nearest_poi, lon, lat)
+        return session.write_transaction(db.nearest_poi, kind, lon, lat)
 
 
-@api.get("/poi/itinerary/{lon:float}/{lat:float}")
-def return_itinerary(lon, lat):
+@api.get("/poi/itinerary/{kind:str}/{lon:float}/{lat:float}")
+def return_itinerary(kind, lon, lat):
     with db.driver.session() as session:
-        return session.write_transaction(db.itinerary_proposal, lon, lat)
+        return session.write_transaction(db.itinerary_proposal, kind, lon, lat)
