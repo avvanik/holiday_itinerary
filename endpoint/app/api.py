@@ -10,6 +10,7 @@ class Neo4jDB:
         self.user = "neo4j"
         self.password = "Y$zulDtAvM3q"
         self.driver = GraphDatabase.driver(self.uri, auth=(self.user, self.password))
+        self.url = "https://raw.githubusercontent.com/DataScientest/JAN23_BDE_INT_Holiday_Itinerary/main/data/places_output.csv?token=GHSAT0AAAAAAB55ARCIPXI334SUJP4GCPVWZBBHS4A"
 
     def verify_connection(self):
         with self.driver as driver:
@@ -19,9 +20,18 @@ class Neo4jDB:
         self.driver.close()
 
     @staticmethod
-    def return_data(tx):
-        result = tx.run("MATCH (p:POI) return p")
-        return result.values()
+    def generate_data(tx, self):
+        result = tx.run("LOAD CSV WITH HEADERS FROM $url AS row CREATE (:POI {id: row.xid, name:row.name, "
+                        "url: row.url, stars: row.stars, wikipedia: row.wikipedia, image: row.image, "
+                        "address: row.address, kind: row.kinds,  location: point({latitude: toFloat(row.lat), "
+                        "longitude: toFloat(row.lon)})}) RETURN p", url=self.url)
+
+        return result
+
+    # @staticmethod
+    # def return_data(tx):
+    #     result = tx.run("MATCH (p:POI) return p")
+    #     return result.values()
 
     @staticmethod
     def return_kind(tx, kind):
@@ -37,7 +47,7 @@ class Neo4jDB:
 
     @staticmethod
     def create_map(poi):
-        itinerary_map = folium.Map(location=[38.05968,  13.26699], zoom_start=13)
+        itinerary_map = folium.Map(location=[38.05968, 13.26699], zoom_start=13)
         lat = poi.get('lat')
         lon = poi.get('lon')
 
@@ -49,9 +59,11 @@ class Neo4jDB:
     @staticmethod
     def itinerary_proposal(tx, lon, lat):
 
+        # get closest poi
         nearest_poi = tx.run("MATCH (p:POI) WITH p, point.distance(point({latitude: $lat, longitude: $lon, "
                              "crs: 'wgs-84}) as distance ORDER BY distance ASC LIMIT 1", lon=lon, lat=lat)
 
+        # set the closest poi as start node and return itinerary (end node 2be defined)
         result = tx.run("MATCH($nearest_poi), (e:End), p = shortestPath((s)-[*]-(e)) "
                         "WHERE length(p) > 1 RETURN p ", nearest_poi=nearest_poi)
 
@@ -74,7 +86,7 @@ def read_root():
 @api.get("/poi")
 def read_item():
     with db.driver.session() as session:
-        return session.write_transaction(db.return_data)
+        return session.write_transaction(db.generate_data)
 
 
 @api.get("/poi/{kind:str}/{lon:float}/{lat:float}")
