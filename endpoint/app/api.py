@@ -22,18 +22,9 @@ class Neo4jDB:
         self.driver.close()
 
     @staticmethod
-    def generate_data(tx):
-        result = tx.run("LOAD CSV WITH HEADERS FROM $url AS row CREATE (:POI {id: row.xid, name:row.name, "
-                        "url: row.url, stars: row.stars, wikipedia: row.wikipedia, image: row.image, "
-                        "address: row.address, kind: row.kinds,  location: point({latitude: toFloat(row.lat), "
-                        "longitude: toFloat(row.lon)})}) RETURN p", url=url)
-
-        return result
-
-    # @staticmethod
-    # def return_data(tx):
-    #     result = tx.run("MATCH (p:POI) return p")
-    #     return result.values()
+    def return_data(tx):
+        result = tx.run("MATCH (p:POI) return p")
+        return result.values()
 
     @staticmethod
     def return_kind(tx, kind):
@@ -88,7 +79,7 @@ def read_root():
 @api.get("/poi")
 def read_item():
     with db.driver.session() as session:
-        return session.write_transaction(db.generate_data)
+        return session.write_transaction(db.return_data)
 
 
 @api.get("/poi/{kind:str}/{lon:float}/{lat:float}")
