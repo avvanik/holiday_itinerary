@@ -6,9 +6,9 @@ import folium
 class Neo4jDB:
 
     def __init__(self):
-        self.uri = "neo4j+s://359dfc7f.databases.neo4j.io:7687"
+        self.uri = "neo4j://neo-db:7687"
         self.user = "neo4j"
-        self.password = "Y$zulDtAvM3q"
+        self.password = "Neo4j"
         self.driver = GraphDatabase.driver(self.uri, auth=(self.user, self.password))
 
     def verify_connection(self):
@@ -25,12 +25,13 @@ class Neo4jDB:
 
     @staticmethod
     def nearest_poi(tx, kind, lon, lat):
-        return tx.run("MATCH (p:POI {kind: $kind}) "
-                      "WITH p, p.location AS start_node, "
-                      "point({latitude: $lat, longitude: $lon}) AS coordinates "
-                      "RETURN p, round(point.distance(start_node, coordinates)) AS distance "
-                      "ORDER BY distance "
-                      "LIMIT 1", kind=kind, lat=lat, lon=lon)
+        result = tx.run("MATCH (p:POI {kind: $kind}) "
+                        "WITH p, p.location AS start_node, "
+                        "point({latitude: $lat, longitude: $lon}) AS coordinates "
+                        "RETURN p, round(point.distance(start_node, coordinates)) AS distance "
+                        "ORDER BY distance "
+                        "LIMIT 1", kind=kind, lat=lat, lon=lon)
+        return result.values()
 
     @staticmethod
     def itinerary_proposal(tx, kind, lon, lat):
@@ -54,7 +55,7 @@ class Neo4jDB:
         for x, y in zip(lat, lon):
             folium.Marker(([x, y])).add_to(itinerary_map)
 
-        print(result)
+        print(result.values)
         return 'output.html'
 
 
