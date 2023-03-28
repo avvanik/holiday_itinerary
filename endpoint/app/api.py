@@ -1,14 +1,15 @@
 from fastapi import FastAPI
 from neo4j import GraphDatabase
 import folium
+import os
 
 
 class Neo4jDB:
 
     def __init__(self):
-        self.uri = "neo4j://neo-db:7687"
-        self.user = "neo4j"
-        self.password = "Neo4j"
+        self.uri = os.getenv("NEO4J_URI")  # "neo4j://neo-db:7687"
+        self.user = os.getenv("USER_NAME")  # "neo4j"
+        self.password = os.getenv("PASSWORD")   # "Neo4j"
         self.driver = GraphDatabase.driver(self.uri, auth=(self.user, self.password))
 
     def verify_connection(self):
