@@ -25,7 +25,9 @@ def read_item():
         return session.write_transaction(db.return_all_pois)
 
 
-# returns nearest poi
+# returns the nearest poi
+# user adds kind and coordinates to endpoint
+# api returns the nearest poi from coordinates of added kind
 @api.get("/poi/nearest/{kind:str}/{lon:float}/{lat:float}",
          name='nearest point of interest (functions as start node '
               'in next endpoint)')
@@ -34,9 +36,16 @@ def return_nearest_poi(kind, lon, lat):
         return session.write_transaction(db.nearest_poi, kind, lon, lat)
 
 
-# proposes an itinerary with the nearest poi as start node
-@api.get("/poi/itinerary/{kind:str}/start={start_lon:float}/{start_lat:float}/end={end_lon:float}/{end_lat:float}",
-         name='itinerary visualized in a folium map')
-def return_itinerary(kind, start_lon, start_lat, end_lon, end_lat):
+# proposes an itinerary with the nearest poi for start and end node
+# user adds desired days of visit
+@api.get("/poi/itinerary/start={start_lon:float}/{start_lat:float}/end={end_lon:float}/{end_lat:float}/{"
+         "days:int}",
+         name='Itinerary visualized in a folium map.',
+         description='Proposes an itinerary with the nearest poi for start and end node. The user adds desired days '
+                     'of visit')
+def return_itinerary(start_lon, start_lat, end_lon, end_lat, number_days):
     with db.driver.session() as session:
-        return session.write_transaction(db.itinerary_proposal, kind, start_lon, start_lat, end_lon, end_lat)
+        return session.write_transaction(db.itinerary_proposal, start_lon, start_lat, end_lon, end_lat, number_days)
+
+
+
