@@ -28,4 +28,8 @@ services:
       - neo-db
 volumes:
   data:
+<<<<<<< HEAD
   logs:
+=======
+  logs:
+>>>>>>> dcaf82f4339db8b0c62f0542234a48909f9227a5
