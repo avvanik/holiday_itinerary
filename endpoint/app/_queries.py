@@ -21,12 +21,11 @@ query_cluster1 = 'MATCH (p:POI) ' \
 query_cluster2 = 'MATCH (d:$Day) ' \
                  'WITH collect(d) AS days ' \
                  'UNWIND range(0, $days) AS day ' \
-                 'SET (days[day]).itinerary_day = day + 1 ' \
-                 'RETURN d'
+                 'SET (days[day]).itinerary_day = day + 1 ' # check
 
 query_cluster3 = 'MATCH (p:POI), (d:$Day) ' \
                  'WITH p, d ' \
-                 'ORDER BY point.distance(p.location, d.location) ' \
+                 'ORDER BY distance(p.location, d.location) ' \
                  'WITH p, ' \
                  'collect(d) AS days ' \
                  'SET p.itinerary_day = days[0].itinerary_day' \
@@ -37,10 +36,9 @@ query_cluster4 = 'MATCH (p:$POI), (d:$Day) ' \
                  'WITH d, ' \
                  'AVG(p.location.x) AS newX, ' \
                  'AVG(p.location.y) AS newY ' \
-                 'SET d.location = point({x:newX, y:newY}), d.iterations = d.iterations + 1' \
-                 'RETURN p'
+                 'SET d.location = point({x:newX, y:newY}), d.iterations = d.iterations + 1' # check
 
-query_start_node = 'MATCH (p:POI {kind: accommodation}) ' \
+query_start_node = 'MATCH (p:POI {kind: "accommodation"}) ' \
                    'WITH p, p.location AS start, ' \
                    'point({latitude: $lat, longitude: $lon}) AS location ' \
                    'RETURN p, ' \
