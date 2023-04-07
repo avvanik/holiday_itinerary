@@ -14,10 +14,8 @@ services:
       - logs:/logs
   python-app:
     image: fastapi:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
-    command: uvicorn app.api:api --host 0.0.0.0
+    build: app/Dockerfile
+    command: uvicorn api:api --host 0.0.0.0
     ports:
       - 8000:8000
     environment:

@@ -1,7 +1,7 @@
 from neo4j import GraphDatabase
 import folium
 import os
-from JAN23_BDE_INT_Holiday_Itinerary.endpoint.app._queries import query_cluster1, query_cluster2, query_cluster3, \
+from _queries import query_cluster1, query_cluster2, query_cluster3, \
     query_cluster4, query_start_node, query_end_node, query_all, query_relationship_day, add_start_and_end_node, \
     query_end_node_set, query_start_node_set
 
