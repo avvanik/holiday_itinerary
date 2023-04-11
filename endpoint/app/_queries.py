@@ -67,9 +67,9 @@ query_relationships = 'MATCH (p:$poi {itinerary_day: $days}) ' \
                       'FOREACH (day in p.itinerary_day | ' \
                       'CREATE (a:POI {kind: $accommodation, itinerary_day: day})-[:ROUTE]-> ' \
                       '(b:POI {kind: [$cultural, $religion],' \
-                      ' itinerary_day: day})-[:ROUTE]-> ' \
+                      'itinerary_day: day})-[:ROUTE]-> ' \
                       '(c:POI {kind: $food, itinerary_day: day})' \
-                      'CREATE (a)-[:ROUTE]->(a_next:POI {kind: $accommodation, ' \
+                      'CREATE (c)-[:ROUTE]->(a2:POI {kind: $accommodation, ' \
                       'itinerary_day: day+1}))'
 
 # find the shortest path between the start node and the end node
