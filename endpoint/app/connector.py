@@ -2,8 +2,7 @@ from neo4j import GraphDatabase
 import folium
 import os
 from _queries import query_cluster1, query_cluster2, query_cluster3, \
-    query_cluster4, query_start_node, query_end_node, query_all, query_relationship_day, add_start_and_end_node, \
-    query_end_node_set, query_start_node_set
+    query_cluster4, query_start_node, query_end_node, query_all, query_relationships, query_itinerary
 
 
 class Neo4jDB:
@@ -65,44 +64,37 @@ class Neo4jDB:
         start_node = tx.run(
             query_start_node,
             lat=start_lat,
-            lon=start_lon
-        )
-
-        # set start node itinerary day = 1
-        start_node = tx.run(
-            query_start_node_set,
-            start_node=start_node
-
+            lon=start_lon,
+            kind="accommodation"
         )
 
         # set end node
         end_node = tx.run(
             query_end_node,
             lat=end_lat,
-            lon=end_lon)
-
-        # set end node itinerary day = number days
-        end_node = tx.run(
-            query_end_node_set,
-            end_node=end_node,
-            day=number_days
-
+            lon=end_lon,
+            days=number_days,
+            kind="accommodation"
         )
 
         # create route for each day + routes between days
         itinerary_relationships = tx.run(
-            query_relationship_day,
+            query_relationships,
             POI=itinerary_days,
-            day=number_days
+            days=number_days,
+            accommodation="accommodation",
+            cultural="cultural",
+            religion="religion",
+            food="food"
         )
 
-        # adds start and end point to itinerary
+        # adds start and end point to itinerary and gets shortest path
         complete_itinerary = tx.run(
-            add_start_and_end_node,
+            query_itinerary,
             POI=itinerary_relationships,
             start_node=start_node,
             end_node=end_node,
-            day=number_days
+            days=number_days
         )
 
         print(complete_itinerary.values)
