@@ -38,12 +38,20 @@ query_cluster4 = 'MATCH (p:$POI), (d:$Day) ' \
                  'AVG(p.location.y) AS newY ' \
                  'SET d.location = point({x:newX, y:newY}), d.iterations = d.iterations + 1' # check
 
+query_nearest_poi = 'MATCH (p:POI {kind: $kind}) ' \
+                   'WITH p, p.location AS start, ' \
+                   'point({latitude: $lat, longitude: $lon}) AS location ' \
+                   'RETURN p, ' \
+                   'ROUND(distance(start, location)) AS distance ' \
+                   'ORDER BY distance ' \
+                   'LIMIT 1'
+
 query_start_node = 'WITH point({ longitude: $longitude, latitude: $latitude }) AS location' \
                    'MATCH (p:POI {kind: $kind})' \
                    'WITH p, distance(p.point, location) AS dist' \
                    'ORDER BY dist' \
                    'LIMIT 1' \
-                   'WITH h, point({ longitude: $longitude, latitude: $latitude }) AS location' \
+                   'WITH p, point({ longitude: $longitude, latitude: $latitude }) AS location' \
                    'CREATE (s:Start)' \
                    'SET s = p' \
                    'SET s.itinerary_day=1' \
@@ -65,15 +73,15 @@ query_end_node = 'WITH point({ longitude: $longitude, latitude: $latitude }) AS 
 # pass number days as parameter and create relationships for each day
 query_relationships = 'MATCH (p:$poi {itinerary_day: $days}) ' \
                       'FOREACH (day in p.itinerary_day | ' \
-                      'CREATE (a:POI {kind: $accommodation, itinerary_day: day})-[:ROUTE]-> ' \
-                      '(b:POI {kind: [$cultural, $religion],' \
+                      'CREATE (a:$poi {kind: $accommodation, itinerary_day: day})-[:ROUTE]-> ' \
+                      '(b:$poi {kind: [$cultural, $religion],' \
                       'itinerary_day: day})-[:ROUTE]-> ' \
-                      '(c:POI {kind: $food, itinerary_day: day})' \
-                      'CREATE (c)-[:ROUTE]->(a2:POI {kind: $accommodation, ' \
+                      '(c:$poi {kind: $food, itinerary_day: day})' \
+                      'CREATE (c)-[:ROUTE]->(a2:$poi {kind: $accommodation, ' \
                       'itinerary_day: day+1}))'
 
 # find the shortest path between the start node and the end node
 query_itinerary = 'MATCH (start:$start_node), (p1:POI {kind: $accommodation, itinerary_day: 1}), ' \
-                  '(p2:POI {kind: $accommodation, itinerary_day: $days}), (end:$end_node)' \
+                  '(p2:$poi {kind: $accommodation, itinerary_day: $days}), (end:$end_node)' \
                   'MATCH path = shortestPath((start)-[:START]->(p1)-[:ROUTE*]->(p2)-[:ROUTE*]->(end))' \
                   'RETURN path'

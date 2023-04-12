@@ -2,7 +2,7 @@ from neo4j import GraphDatabase
 import folium
 import os
 from _queries import query_cluster1, query_cluster2, query_cluster3, \
-    query_cluster4, query_start_node, query_end_node, query_all, query_relationships, query_itinerary
+    query_cluster4, query_start_node, query_end_node, query_all, query_relationships, query_itinerary, query_nearest_poi
 
 
 class Neo4jDB:
@@ -28,7 +28,7 @@ class Neo4jDB:
     @staticmethod
     def nearest_poi(tx, kind, lon, lat):
         return tx.run(
-            query_start_node,
+            query_nearest_poi,
             kind=kind,
             lon=lon,
             lat=lat
