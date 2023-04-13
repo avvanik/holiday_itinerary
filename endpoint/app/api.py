@@ -1,5 +1,7 @@
-from fastapi import FastAPI
 from connector import Neo4jDB
+from fastapi import FastAPI
+import folium
+from fastapi.responses import HTMLResponse
 
 # define api
 api = FastAPI(
@@ -33,7 +35,19 @@ def read_item():
               'in next endpoint)')
 def return_nearest_poi(kind, lon, lat):
     with db.driver.session() as session:
-        return session.write_transaction(db.nearest_poi, kind, lon, lat)
+        poi = session.write_transaction(db.nearest_poi, kind, lon, lat)
+
+    # get coordinates from nearest poi dict
+    lat, lon = poi[0][0]['location']
+
+    # Create the folium map centered on the POI
+    poi_map = folium.Map(location=[38.05968, 13.26699], zoom_start=13)
+    # Add a marker to the map at the POI
+    folium.Marker([lat, lon]).add_to(poi_map)
+    # Get the HTML code for the map
+    map_html = poi_map.get_root().render()
+    # Return the HTML code as a response
+    return HTMLResponse(content=map_html, media_type="text/html")
 
 
 # proposes an itinerary with the nearest poi for start and end node
@@ -46,6 +60,3 @@ def return_nearest_poi(kind, lon, lat):
 def return_itinerary(start_lon, start_lat, end_lon, end_lat, number_days):
     with db.driver.session() as session:
         return session.write_transaction(db.itinerary_proposal, start_lon, start_lat, end_lon, end_lat, number_days)
-
-
-

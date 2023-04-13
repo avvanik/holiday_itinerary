@@ -25,6 +25,8 @@ services:
       - PASSWORD=Neo4j
     depends_on:
       - neo-db
+    volumes:
+       - ./maps:/code/maps
 volumes:
   data:
   logs:
