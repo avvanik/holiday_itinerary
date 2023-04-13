@@ -3,6 +3,7 @@ import folium
 import os
 from _queries import query_cluster1, query_cluster2, query_cluster3, \
     query_cluster4, query_start_node, query_end_node, query_all, query_relationships, query_itinerary, query_nearest_poi
+from fastapi.responses import HTMLResponse
 
 
 class Neo4jDB:
@@ -18,6 +19,17 @@ class Neo4jDB:
 
     def close(self):
         self.driver.close()
+
+    @staticmethod
+    def create_map(lon, lat):
+        poi_map = folium.Map(location=[38.05968, 13.26699], zoom_start=10)
+
+        # Add a marker to the map at the POI
+        folium.Marker([lat, lon]).add_to(poi_map)
+        # Get the HTML code for the map
+        map_html = poi_map.get_root().render()
+        # Return the HTML code as a response
+        return HTMLResponse(content=map_html, media_type="text/html")
 
     @staticmethod
     def return_all_pois(tx):
