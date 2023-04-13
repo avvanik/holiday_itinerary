@@ -21,9 +21,10 @@ class Neo4jDB:
         self.driver.close()
 
     @staticmethod
-    def create_map(lon, lat):
+    def create_map(poi):
         poi_map = folium.Map(location=[38.05968, 13.26699], zoom_start=10)
 
+        lon, lat = poi[0][0]['location']
         # Add a marker to the map at the POI
         folium.Marker([lat, lon]).add_to(poi_map)
         # Get the HTML code for the map
