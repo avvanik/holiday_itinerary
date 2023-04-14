@@ -118,10 +118,4 @@ class Neo4jDB:
             days=number_days
         )
 
-        print(complete_itinerary.values)
-
-        # create map
-        for x, y in zip(complete_itinerary.values.get('lat'), complete_itinerary.values.get('lon')):
-            folium.Marker(([x, y])).add_to(folium.Map(location=[38.05968, 13.26699], zoom_start=13))
-
-        return 'itinerary_map.html'
+        return complete_itinerary.values
