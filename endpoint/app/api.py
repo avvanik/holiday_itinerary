@@ -34,8 +34,7 @@ def read_item():
 def return_nearest_poi(kind, lon, lat):
     with db.driver.session() as session:
         poi = session.write_transaction(db.nearest_poi, kind, lon, lat)
-
-    return db.create_map(poi)
+    return db.create_map(poi, 0)
 
 
 # proposes an itinerary with the nearest poi for start and end node

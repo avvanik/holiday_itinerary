@@ -1,4 +1,4 @@
-# ProjectTemplate
+# Project | Holiday Itinerary in Palermo
 ## Explications and Instructions
 This repository contains the files needed to initialize a wireframe project as part of your [DataScientest](https://datascientest.com/) training.
 
