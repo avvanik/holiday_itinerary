@@ -21,12 +21,12 @@ class Neo4jDB:
         self.driver.close()
 
     @staticmethod
-    def create_map(poi, x):
+    def create_map(poi, map_type='single'):
         poi_map = folium.Map(location=[38.05968, 13.26699], zoom_start=10)
         lon, lat = poi[0][0]['location']
 
         # add poi as marker to map
-        if x == 0:
+        if map_type == 'single':
             folium.Marker([lat, lon]).add_to(poi_map)
 
         # add pois as markers to map to create itinerary

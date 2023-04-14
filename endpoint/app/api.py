@@ -34,7 +34,7 @@ def read_item():
 def return_nearest_poi(kind, lon, lat):
     with db.driver.session() as session:
         poi = session.write_transaction(db.nearest_poi, kind, lon, lat)
-    return db.create_map(poi, 0)
+    return db.create_map(poi)
 
 
 # proposes an itinerary with the nearest poi for start and end node
@@ -46,4 +46,6 @@ def return_nearest_poi(kind, lon, lat):
                      'of visit')
 def return_itinerary(start_lon, start_lat, end_lon, end_lat, number_days):
     with db.driver.session() as session:
-        return session.write_transaction(db.itinerary_proposal, start_lon, start_lat, end_lon, end_lat, number_days)
+        poi = session.write_transaction(db.itinerary_proposal, start_lon, start_lat, end_lon, end_lat, number_days)
+
+    return db.create_map(poi, map_type='multiple')
