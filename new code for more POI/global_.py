@@ -8,7 +8,7 @@ api_key = '5ae2e3f221c38a28845f05b6bc2ee40b8c85b0764ab638ef8c15cd18'
 
 kind = 'accomodations'
 
-kinds = ["accomodations", "religion", "cultural", "foods","natural","historic","shops","architecture","sport","shops"]
+kinds = ["accomodations", "religion", "cultural", "foods","natural","historic","shops","architecture","sport"]
 
 page_length = 100  # 300
 
