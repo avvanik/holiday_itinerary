@@ -1,0 +1,23 @@
+LOAD CSV WITH HEADERS FROM '../data/places_output.csv' AS row
+CREATE (:POI {id: row.xid,
+                    name:row.name,
+                    url: row.url,
+                    stars: row.stars,
+                    wikipedia: row.wikipedia,
+                    image: row.image,
+                    address: row.address,
+                    kind: row.kinds,
+		    location: point({latitude: toFloat(row.lat), longitude: toFloat(row.lon)})
+})
+
+# set kind
+MATCH (n:POI) WHERE n.kind CONTAINS "accomodations"  SET n.kind = "accommodation"
+MATCH (n:POI) WHERE n.kind CONTAINS "religion"  SET n.kind = "religion"
+MATCH (n:POI) WHERE n.kind CONTAINS "cultural"  SET n.kind = "cultural"
+MATCH (n:POI) WHERE n.kind CONTAINS "foods"  SET n.kind = "food"
+
+
+
+
+
+
