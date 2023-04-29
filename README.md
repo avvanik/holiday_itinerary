@@ -1,38 +1,32 @@
 # Project | Holiday Itinerary in Palermo
-## Explications and Instructions
-This repository contains the files needed to initialize a wireframe project as part of your [DataScientest](https://datascientest.com/) training.
 
-It contains mainly the present README.md file and an application template [Streamlit](https://streamlit.io/).
+/output
+- Extraction data as point of interests from opentripmap api
+- the data is saved as a simple csv file in /data
 
-**README**
+/db
+- explanation of simple set up for neo4j db
+- csv file is loaded into db and cleaned
 
-The README.md file is a central element of any git repository. It introduces your project, its goals, and explains how to install, launch, or even contribute to the project.
+/endpoint
+- endpoints are developed through fastapi
+- api and db are deployed in a docker-compose file
+- run api through instructions above
 
-You'll need to edit various sections of this README.md to include the necessary information.
+- git clone
 
-- Complete the sections (`## Presentation` and `## Installation` `## Streamlit App`) following the instructions in those sections.
-- Delete this section (`## Explanations and Instructions`)
+- cd endpoint/app
+docker image build . -t fastapi:latest
 
-## Presentation
+- cd ../endpoint
+- docker-compose up
 
-Complete this section with a brief description of your project, the context (including a link to the DataScientest course), and the objectives.
+- open db on PORT 0.0.0.0:7474
 
-You can also add a brief presentation of the team members with links to your respective networks (GitHub and/or LinkedIn for example).
+- open fastAPI on Port 0.0.0.0:8000
 
-**Example:**
-
-This repository contains the code for our project **PROJECT_NAME**, developed during our [Data Scientist training](https://datascientest.com/en/data-scientist-course) at [DataScientest](https://datascientest.com/).
-
-The goal of this project is to **...**
-
-This project was developed by the following team :
-
-- John Doe ([GitHub](https://github.com/) / [LinkedIn](http://linkedin.com/))
-- Martin Dupont ([GitHub](https://github.com/) / [LinkedIn](http://linkedin.com/))
-
-You can browse and run the [notebooks](./output). You will need to install the dependencies (in a dedicated environment) :
-
-```
-pip install -r requirements.txt
-```
+- /poi : returns all point of interests saved in the db
+- /poi/nearest/{kind:str}/{lon:float}/{lat:float} : returns nearest point of interest in a folium map
+- /poi/itinerary/start={start_lon:float}/{start_lat:float}/end={end_lon:float}/{end_lat:float}/{"
+         "days:int} : suppose to return itinerary with start and end coordinates
 
